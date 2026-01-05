@@ -1,0 +1,66 @@
+<?php
+
+namespace {{controllerNamespace}};
+
+use App\Http\Controllers\Controller;
+use App\Services\{{class}}Service;
+use App\Http\Requests\Store{{class}}Request;
+use App\Http\Requests\Update{{class}}Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
+class {{class}}Controller extends Controller
+{
+    protected {{class}}Service $service;
+
+    public function __construct({{class}}Service $service)
+    {
+        $this->service = $service;
+    }
+
+    public function index(Request $request): View
+    {
+        ${{modelVariablePlural}} = $this->service->getAllPaginated($request);
+        
+        return view('{{routePath}}.index', compact('{{modelVariablePlural}}'));
+    }
+
+    public function create(): View
+    {
+        return view('{{routePath}}.create');
+    }
+
+    public function store(Store{{class}}Request $request): RedirectResponse
+    {
+        $this->service->create($request->validated());
+        return redirect()->route('{{routeName}}.index')
+            ->with('success', '{{class}} creado exitosamente.');
+    }
+
+    public function show(string $id): View
+    {
+        ${{modelVariable}} = $this->service->getById($id);
+        return view('{{routePath}}.show', compact('{{modelVariable}}'));
+    }
+
+    public function edit(string $id): View
+    {
+        ${{modelVariable}} = $this->service->getById($id);
+        return view('{{routePath}}.edit', compact('{{modelVariable}}'));
+    }
+
+    public function update(Update{{class}}Request $request, string $id): RedirectResponse
+    {
+        $this->service->update($id, $request->validated());
+        return redirect()->route('{{routeName}}.index')
+            ->with('success', '{{class}} actualizado exitosamente.');
+    }
+
+    public function destroy(string $id): RedirectResponse
+    {
+        $this->service->delete($id);
+        return redirect()->route('{{routeName}}.index')
+            ->with('success', '{{class}} eliminado exitosamente.');
+    }
+}
